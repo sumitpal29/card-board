@@ -1,46 +1,50 @@
-import React from "react";
+import React, { useContext } from "react";
+import { StateContext } from "../Wrapper";
 
-class Draggable extends React.Component {
-  drag = (e) => {
+function Draggable(props) {
+  const stateContext = useContext(StateContext);
+  const drag = (e) => {
     const el = e.target;
-
     e.dataTransfer.setData("transfer", e.target.id);
-    e.dataTransfer.setData(
-      "parent-type",
-      e.target.parentNode.getAttribute("type")
-    );
-    e.dataTransfer.setData("children-type", e.target.getAttribute("type"));
     el.classList.add("hold");
     setTimeout(() => el.classList.add("invisible"), 0);
+    if (e.target.getAttribute("type") === "column") {
+      const index = stateContext.currentBoardState.innerChildren.findIndex(
+        (el) => {
+          if (el.id === e.target.id) {
+            return true;
+          }
+          return false;
+        }
+      );
+      e.dataTransfer.setData("index", index);
+    }
   };
 
-  noAllowDrop = (e) => {
-    console.log("noAllowDrop -", e.target.id);
+  const noAllowDrop = (e) => {
     e.stopPropagation();
     e.preventDefault();
   };
 
-  dragEnd = (e) => {
+  const dragEnd = (e) => {
     const el = e.target;
     el.classList.remove("invisible");
     el.classList.remove("hold");
   };
 
-  render() {
-    return (
-      <div
-        className={`draggable-el ${this.props.classRef || ""}`}
-        id={this.props.id}
-        draggable="true"
-        onDragStart={this.drag}
-        onDragOver={this.noAllowDrop}
-        onDragEnd={this.dragEnd}
-        type={this.props.type}
-      >
-        {this.props.children}
-      </div>
-    );
-  }
+  return (
+    <div
+      className={`draggable-el ${props.classRef || ""}`}
+      id={props.card.id}
+      type={props.card.type}
+      draggable="true"
+      onDragStart={drag}
+      onDragOver={noAllowDrop}
+      onDragEnd={dragEnd}
+    >
+      {props.children}
+    </div>
+  );
 }
 
 export default Draggable;

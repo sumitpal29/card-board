@@ -1,48 +1,64 @@
-import React from "react";
+import React, { useContext } from "react";
+import { StateContext } from "../Wrapper";
 
-class Dropable extends React.Component {
-  insertAfter(newElement, referenceNode) {
-    referenceNode.parentNode.insertBefore(newElement, referenceNode.nextSibling);
-  }
-  insertBefore(newElement, referenceNode) {
-    referenceNode.parentNode.insertBefore(newElement, referenceNode);
-  }
-  drop = (e) => {
-    // e.preventDefault();
-    const id = e.dataTransfer.getData("transfer");
-    const parentType = e.dataTransfer.getData("parent-type");
-    const childrenType = e.dataTransfer.getData("children-type");
-    const elType = e.target.getAttribute("type");
+function Dropable(props) {
+  const stateContext = useContext(StateContext);
+  const drop = (e) => {
+    e.preventDefault();
 
-    if (parentType === elType) {
-      const el = document.getElementById(id);
-      e.target.appendChild(el);
-    } else if (elType === childrenType) {
-      const el = document.getElementById(id);
-      this.insertBefore(el, e.target);
-    }
+    const left = e.target.getBoundingClientRect().left;
+    const x = e.pageX;
+    const placement = left + 272 / 2 < x ? 1 : 0;
+    const index = stateContext.currentBoardState.innerChildren.findIndex(
+      (el) => {
+        if (el.id === e.target.id) {
+          return true;
+        }
+        return false;
+      }
+    );
 
-    console.log("drop over", e.target.id);
+    const draggedIndex = e.dataTransfer.getData("index");
+    const draggedFrom = Number(draggedIndex);
+    const newPosition = placement + Number(index);
+
+    stateContext.dispatch({
+      type: "moveColumn",
+      value: {
+        draggedFrom,
+        newPosition,
+      },
+    });
+    e.target.classList.remove('hovered')
+    console.log(placement, newPosition, draggedFrom, e.target.id);
   };
 
-  allowDrop = (e) => {
+  const allowDrop = (e) => {
     e.stopPropagation();
     e.preventDefault();
   };
 
-  render() {
-    return (
-      <div
-        id={this.props.id}
-        className={`droppable-el ${this.props.classRef || ""}`}
-        onDrop={this.drop}
-        onDragOver={this.allowDrop}
-        type={this.props.type}
-      >
-        {this.props.children}
-      </div>
-    );
+  const onDragLeave= e => {
+    e.target.classList.remove('hovered')
   }
+
+  const onDragEnter= e=> {
+    e.target.classList.add('hovered')
+  }
+
+  return (
+    <div
+      id={props.id}
+      className={`droppable-el ${props.classRef || ""}`}
+      onDrop={drop}
+      onDragOver={allowDrop}
+      onDragLeave={onDragLeave}
+      onDragEnter={onDragEnter}
+      type={props.type}
+    >
+      {props.children}
+    </div>
+  );
 }
 
 export default Dropable;
