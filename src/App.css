@@ -58,6 +58,11 @@
   max-height: 100%;
   position: relative;
   white-space: normal;
+  overflow: hidden;
+}
+
+.card-column{
+  overflow-y: auto;
 }
 
 
