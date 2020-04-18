@@ -71,6 +71,25 @@ function reducer(state, action) {
       console.log("addCard", r);
       return r;
 
+    case "chageCardPosition": 
+      const {oldColumnIndex} = action.value
+      const {newColumnIndex} = action.value
+      const {cardIndex} = action.value
+
+      const clonedState = {...state}
+
+      let newIndex = action.value === 'last' ? clonedState.innerChildren[newColumnIndex].length : action.value.newIndex
+
+    
+      console.log('chageCardPosition', oldColumnIndex, newColumnIndex, cardIndex, newIndex)
+
+      
+      // const oldColumn = [...clonedState.innerChildren[oldColumnIndex]]
+      const removedItem = clonedState.innerChildren[oldColumnIndex].innerChildren.splice(cardIndex, 1)
+      clonedState.innerChildren[newColumnIndex].innerChildren.splice(newIndex, 0, removedItem[0])
+      console.log(clonedState)
+      return clonedState;
+
     default:
       return state;
   }

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { StateContext } from "./Wrapper";
 
 function Task(props) {
-  console.log('rendered task component', props)
+  console.log('rendered ---- task component', props)
   const stateContext = useContext(StateContext);
   const task =
     stateContext.currentBoardState.innerChildren[props.columnIndex]

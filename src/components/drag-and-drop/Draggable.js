@@ -4,16 +4,18 @@ import { StateContext } from "../Wrapper";
 function Draggable(props) {
   console.log('rendered dragable component', props)
   const stateContext = useContext(StateContext);
-  const drag = useCallback((e) => {
 
+  const drag = useCallback((e) => {
     const el = e.target;
     const type = e.target.getAttribute("type");
     e.dataTransfer.setData("transfer", e.target.id);
     e.dataTransfer.setData("target-type", type);
 
     if (type === "card") {
-      console.log("column index sent", props.columnInde, props.taskIndex);
+      console.log("column index sent", props.columnIndex, props.taskIndex, e.target.id);
+
       e.dataTransfer.setData("column-index", props.columnIndex);
+      e.dataTransfer.setData("card-index", props.taskIndex);
     }
 
     el.classList.add("hold");
@@ -31,7 +33,7 @@ function Draggable(props) {
       );
       e.dataTransfer.setData("index", index);
     }
-  }, [props.columnInde, props.columnIndex, props.taskIndex, stateContext.currentBoardState.innerChildren]);
+  }, [props.columnIndex, props.taskIndex, stateContext.currentBoardState.innerChildren]);
 
   const noAllowDrop = (e) => {
     e.stopPropagation();

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback, useEffect } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import { StateContext } from "./Wrapper";
 import CardContainer from "./CardContainer";
 
@@ -25,10 +25,6 @@ const Board = () => {
     stateContext.dispatch({ type: "addColumn", value: coulumnHeader });
     setCoulumnHeader("");
   }, [coulumnHeader, stateContext]);
-
-  useEffect(() => {
-    console.log("I am JOKER's useEffect--->");
-  }, []);
 
   return (
     <div id="boardRow" className="row">
