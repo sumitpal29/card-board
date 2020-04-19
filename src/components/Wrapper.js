@@ -5,7 +5,7 @@ export const StateContext = React.createContext();
 
 
 function Wrapper(props) {
-  console.log("rendered wrapper component");
+  // console.log("rendered wrapper component");
   const [currentBoardState, dispatch] = useCallReducer();
 
   return (

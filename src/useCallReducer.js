@@ -58,7 +58,7 @@ function reducer(state, action) {
 
     case "addCard":
       console.log("add card called", action.value);
-      const columns = [...state.innerChildren];
+      let columns = [...state.innerChildren];
       const column = [
         ...columns[action.value.index].innerChildren,
         action.value.card,
@@ -71,24 +71,63 @@ function reducer(state, action) {
       console.log("addCard", r);
       return r;
 
-    case "chageCardPosition": 
-      const {oldColumnIndex} = action.value
-      const {newColumnIndex} = action.value
-      const {cardIndex} = action.value
+    case "changeColumnHeader":
+      const { header } = action.value;
+      const { index } = action.value;
+      columns = [...state.innerChildren];
+      columns[index].header = header;
+      console.log(header, columns[index]);
+      return {
+        ...state,
+        innerChildren: [...columns],
+      };
 
-      const clonedState = {...state}
+    case "chageCardPosition":
+      const { oldColumnIndex } = action.value;
+      const { newColumnIndex } = action.value;
+      const { cardIndex } = action.value;
+      const clonedState = { ...state };
 
-      let newIndex = action.value === 'last' ? clonedState.innerChildren[newColumnIndex].length : action.value.newIndex
+      let newIndex =
+        action.value === "last"
+          ? clonedState.innerChildren[newColumnIndex].length
+          : action.value.newIndex;
 
-    
-      console.log('chageCardPosition', oldColumnIndex, newColumnIndex, cardIndex, newIndex)
+      const removedItem = clonedState.innerChildren[
+        oldColumnIndex
+      ].innerChildren.splice(cardIndex, 1);
+      clonedState.innerChildren[newColumnIndex].innerChildren.splice(
+        newIndex,
+        0,
+        removedItem[0]
+      );
 
-      
-      // const oldColumn = [...clonedState.innerChildren[oldColumnIndex]]
-      const removedItem = clonedState.innerChildren[oldColumnIndex].innerChildren.splice(cardIndex, 1)
-      clonedState.innerChildren[newColumnIndex].innerChildren.splice(newIndex, 0, removedItem[0])
-      console.log(clonedState)
       return clonedState;
+    case "moveCard":
+      const { newCardPosition } = action.value;
+      const { oldCardPosition } = action.value;
+      const { columnIndex } = action.value;
+
+      const clonedInnerChildren = [...state.innerChildren];
+      const innerCardArray = [
+        ...clonedInnerChildren[columnIndex].innerChildren,
+      ];
+
+      moveArrayElement(innerCardArray, oldCardPosition, newCardPosition);
+
+      clonedInnerChildren[columnIndex].innerChildren = innerCardArray;
+
+      console.log(
+        newCardPosition,
+        oldCardPosition,
+        columnIndex,
+        innerCardArray
+      );
+
+      return {
+        ...state,
+        innerChildren: [...clonedInnerChildren],
+      };
 
     default:
       return state;

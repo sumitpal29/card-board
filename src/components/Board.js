@@ -7,12 +7,12 @@ import Draggable from "./drag-and-drop/Draggable";
 
 const Board = () => {
   const stateContext = useContext(StateContext);
-  console.log("rendered Board component");
+  // console.log("rendered Board component");
   const [isAddOptVisible, setIsAddOptVisible] = useState(false);
   const [coulumnHeader, setCoulumnHeader] = useState("");
 
   const handleColumnHeaderChange = useCallback((e) => {
-    console.log("in");
+    console.log("handle Column Header Change");
     setCoulumnHeader(e.target.value);
   }, []);
 
@@ -21,6 +21,7 @@ const Board = () => {
   }, [isAddOptVisible]);
 
   const handleAddColumn = useCallback(() => {
+    console.log('called handleAddColumn')
     setIsAddOptVisible(false);
     stateContext.dispatch({ type: "addColumn", value: coulumnHeader });
     setCoulumnHeader("");
@@ -41,20 +42,21 @@ const Board = () => {
           </Draggable>
         ))}
         <div className="column">
-          <div className="add-btn">
+          <div className={`add-item-controller ${isAddOptVisible && 'active'}`}>
             {!isAddOptVisible ? (
               <div onClick={handleOnAddColumn}>
                 + New Column {isAddOptVisible + ""}
               </div>
             ) : (
               <div className="columnForm">
-                {isAddOptVisible + ""}
                 <input
                   type="text"
+                  className="input-text"
                   onChange={handleColumnHeaderChange}
                   value={coulumnHeader}
                 />
-                <button onClick={handleAddColumn}>Add</button>
+                <button className="btn btn-primary" onClick={handleAddColumn}>Add</button>
+                <span onClick={()=>setIsAddOptVisible(false)} className="cross">X</span>
               </div>
             )}
           </div>
