@@ -71,12 +71,10 @@ const Board = () => {
                 <button className="btn btn-primary" onClick={handleAddColumn}>
                   Add
                 </button>
-                <span
-                  onClick={() => setIsAddOptVisible(false)}
-                  className="cross"
-                >
-                  X
-                </span>
+                
+                <button onClick={() => setIsAddOptVisible(false)} className="btn btn-secondary">
+              Close
+            </button>
               </div>
             )}
           </div>

@@ -1,15 +1,17 @@
 import { useReducer } from "react";
+import { getLocalData, setLocalData } from "./utils";
 
-const boardInitialState = {
+let boardInitialState = {
   id: "customBoard",
   type: "board",
   innerChildren: [],
+  isCachingEnabled: false,
 };
 
 const defaultColumn = () => ({
   identifier: `column${Math.random().toString().slice(2, 8)}`,
   type: "column",
-  header: '',
+  header: "",
   innerChildren: [],
 });
 
@@ -17,10 +19,14 @@ const moveArrayElement = (arr, old, to) => {
   arr.splice(to, 0, arr.splice(old, 1)[0]);
 };
 
-function reducer(state, action) {
-  console.log("prevState: ", state);
-  console.log("action: ", action);
+const updateLocalState = (state) => {
+  console.log(state.isCachingEnabled, state)
+  state.isCachingEnabled && setLocalData("board", JSON.stringify(state));
+  return state;
+};
 
+function reducer(state, action) {
+  console.log("last state", state);
   switch (action.type) {
     case "addColumn":
       const newColumn = defaultColumn();
@@ -28,15 +34,10 @@ function reducer(state, action) {
       newColumn.parentId = state.id;
       newColumn.header = action.value;
 
-      console.log({
+      return updateLocalState({
         ...state,
         innerChildren: [...state.innerChildren, newColumn],
       });
-
-      return {
-        ...state,
-        innerChildren: [...state.innerChildren, newColumn],
-      };
 
     case "moveColumn":
       const elArr = [...state.innerChildren];
@@ -47,30 +48,23 @@ function reducer(state, action) {
         action.value.newPosition
       );
 
-      return {
+      return updateLocalState({
         ...state,
         innerChildren: elArr,
-      };
-
-    case "updateColumnHeader":
-      const updatedCard = action.value;
-      console.log(updatedCard);
-      return state;
+      });
 
     case "addCard":
-      console.log("add card called", action.value);
       let columns = [...state.innerChildren];
       const column = [
         ...columns[action.value.index].innerChildren,
         action.value.card,
       ];
       columns[action.value.index].innerChildren = column;
-      const r = {
+
+      return updateLocalState({
         ...state,
         innerChildren: [...columns],
-      };
-      console.log("addCard", r);
-      return r;
+      });
 
     case "changeColumnHeader":
       const { header } = action.value;
@@ -78,11 +72,11 @@ function reducer(state, action) {
 
       const _columns = [...state.innerChildren];
       _columns[index].header = header;
-      
-      return {
+
+      return updateLocalState({
         ...state,
         innerChildren: [..._columns],
-      };
+      });
 
     case "chageCardPosition":
       const { oldColumnIndex } = action.value;
@@ -104,32 +98,39 @@ function reducer(state, action) {
         removedItem[0]
       );
 
-      return clonedState;
+      return updateLocalState(clonedState);
+
     case "moveCard":
       const { newCardPosition } = action.value;
       const { oldCardPosition } = action.value;
       const { columnIndex } = action.value;
-
       const clonedInnerChildren = [...state.innerChildren];
       const innerCardArray = [
         ...clonedInnerChildren[columnIndex].innerChildren,
       ];
 
       moveArrayElement(innerCardArray, oldCardPosition, newCardPosition);
-
       clonedInnerChildren[columnIndex].innerChildren = innerCardArray;
 
-      console.log(
-        newCardPosition,
-        oldCardPosition,
-        columnIndex,
-        innerCardArray
-      );
-
-      return {
+      return updateLocalState({
         ...state,
         innerChildren: [...clonedInnerChildren],
-      };
+      });
+    case "updateCard": 
+
+    const _state = {...state};
+    const props = action.value;
+    _state.innerChildren[props.columnIndex].innerChildren[props.cardIndex] = props.card;
+
+    return updateLocalState({
+      ..._state
+    })
+
+
+    case "changeLocalStoreOption": 
+     return {
+       ...state, isCachingEnabled: action.value
+     }
 
     default:
       return state;
@@ -137,5 +138,14 @@ function reducer(state, action) {
 }
 
 export default function useCallReducer() {
+  const localBoradData = getLocalData("board");
+  if (!localBoradData) {
+    setLocalData("board", JSON.stringify(boardInitialState));
+  } else {
+    const parsed = JSON.parse(localBoradData);
+    if (parsed.id && parsed.type && parsed.innerChildren.length) {
+      boardInitialState = parsed;
+    }
+  }
   return useReducer(reducer, boardInitialState);
 }

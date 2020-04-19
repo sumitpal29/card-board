@@ -17,3 +17,30 @@ export const adjustTextAreaheight = (target, cb) => {
 
   cb && cb(target.value);
 };
+
+export const getLocalData = (key) => {
+  try {
+    if (!window) return;
+    return window.localStorage.getItem(key);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const setLocalData = (key, value) => {
+  try {
+    if (!window) return;
+    window.localStorage.setItem(key, value);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const clearLocalData = () => {
+  try {
+    if (!window) return;
+    window.localStorage.clear();
+  } catch (err) {
+    console.error(err);
+  }
+};

@@ -4,14 +4,12 @@ import { StateContext } from "./Wrapper";
 import Draggable from "./drag-and-drop/Draggable";
 import { debounce, adjustTextAreaheight } from "../utils";
 
-const defaultCard = (i) => ({
+const defaultCard = () => ({
   id: `card_${Math.random().toString().slice(2, 8)}`,
   type: "card",
   header: `Card header`,
   description: "",
-  properties: {
-    label: "",
-  },
+  properties: {},
 });
 
 function CardContainer(props) {
@@ -70,6 +68,10 @@ function CardContainer(props) {
     }
   };
 
+  const handleColumnDelete = () => {
+    console.log('delete column')
+  }
+
   useEffect(() => {
     isAddOptVisible && inputColumn && setTimeout(() => inputColumn.focus(), 0);
   }, [inputColumn, isAddOptVisible]);
@@ -87,7 +89,9 @@ function CardContainer(props) {
           className="text-area text-area__header"
           value={cardHeader}
         ></textarea>
-        <div className="delete-card">delete</div>
+        <div className="delete-card" onClick={handleColumnDelete} title="Delete this card?">
+          <img src="../../delete.svg" height="15" alt="Delete this card?" />
+        </div>
       </div>
       {/* this will a dragable content */}
       <div manage="vertically" id={card.id}>
@@ -97,14 +101,16 @@ function CardContainer(props) {
             classRef="card-dragable"
             card={cardObj}
           >
-            <Task columnIndex={props.index} taskIndex={key} />
+            <Task columnIndex={props.index} cardIndex={key} />
           </Draggable>
         ))}
       </div>
       {/* On click add card it will add one more draggable task */}
       <div className={`add-item-controller ${isAddOptVisible && "active"}`}>
         {!isAddOptVisible ? (
-          <div className="column-form" onClick={() => setAddOption(true)}>+ Add another card</div>
+          <div className="column-form" onClick={() => setAddOption(true)}>
+            + Add another card
+          </div>
         ) : (
           <div className="column-form">
             <textarea
@@ -118,9 +124,9 @@ function CardContainer(props) {
             <button className="btn btn-primary" onClick={handleAddCard}>
               Add
             </button>
-            <span onClick={() => setAddOption(false)} className="cross">
-              X
-            </span>
+            <button onClick={() => setAddOption(false)} className="btn btn-secondary">
+              Close
+            </button>
           </div>
         )}
       </div>
