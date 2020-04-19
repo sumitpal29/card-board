@@ -5,10 +5,11 @@ const boardInitialState = {
   type: "board",
   innerChildren: [],
 };
+
 const defaultColumn = () => ({
   identifier: `column${Math.random().toString().slice(2, 8)}`,
   type: "column",
-  header: `column header ${Math.random().toString().slice(2, 8)}`,
+  header: '',
   innerChildren: [],
 });
 
@@ -74,12 +75,13 @@ function reducer(state, action) {
     case "changeColumnHeader":
       const { header } = action.value;
       const { index } = action.value;
-      columns = [...state.innerChildren];
-      columns[index].header = header;
-      console.log(header, columns[index]);
+
+      const _columns = [...state.innerChildren];
+      _columns[index].header = header;
+      
       return {
         ...state,
-        innerChildren: [...columns],
+        innerChildren: [..._columns],
       };
 
     case "chageCardPosition":

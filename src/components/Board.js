@@ -1,31 +1,39 @@
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext, useState, useCallback, useEffect } from "react";
 import { StateContext } from "./Wrapper";
 import CardContainer from "./CardContainer";
+import { adjustTextAreaheight } from "../utils";
 
 import Droppable from "./drag-and-drop/Dropable";
 import Draggable from "./drag-and-drop/Draggable";
 
 const Board = () => {
   const stateContext = useContext(StateContext);
-  // console.log("rendered Board component");
   const [isAddOptVisible, setIsAddOptVisible] = useState(false);
   const [coulumnHeader, setCoulumnHeader] = useState("");
-
-  const handleColumnHeaderChange = useCallback((e) => {
-    console.log("handle Column Header Change");
-    setCoulumnHeader(e.target.value);
-  }, []);
+  let inputColumn = null;
 
   const handleOnAddColumn = useCallback(() => {
     setIsAddOptVisible(!isAddOptVisible);
   }, [isAddOptVisible]);
 
   const handleAddColumn = useCallback(() => {
-    console.log('called handleAddColumn')
-    setIsAddOptVisible(false);
-    stateContext.dispatch({ type: "addColumn", value: coulumnHeader });
-    setCoulumnHeader("");
+    if (coulumnHeader.length) {
+      setIsAddOptVisible(false);
+      stateContext.dispatch({ type: "addColumn", value: coulumnHeader });
+      setCoulumnHeader("");
+    }
   }, [coulumnHeader, stateContext]);
+
+  const keyPress = (e) => {
+    if (e.keyCode === 27) {
+      setCoulumnHeader("");
+      setIsAddOptVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    isAddOptVisible && inputColumn && setTimeout(() => inputColumn.focus(), 0);
+  }, [inputColumn, isAddOptVisible]);
 
   return (
     <div id="boardRow" className="row">
@@ -42,21 +50,33 @@ const Board = () => {
           </Draggable>
         ))}
         <div className="column">
-          <div className={`add-item-controller ${isAddOptVisible && 'active'}`}>
+          <div className={`add-item-controller ${isAddOptVisible && "active"}`}>
             {!isAddOptVisible ? (
-              <div onClick={handleOnAddColumn}>
+              <div className="column-form" onClick={handleOnAddColumn}>
                 + New Column {isAddOptVisible + ""}
               </div>
             ) : (
-              <div className="columnForm">
-                <input
-                  type="text"
-                  className="input-text"
-                  onChange={handleColumnHeaderChange}
+              <div className="column-form">
+                <textarea
+                  rows="auto"
+                  focus="true"
+                  ref={(e) => (inputColumn = e)}
+                  onChange={(e) =>
+                    adjustTextAreaheight(e.target, setCoulumnHeader)
+                  }
+                  onKeyDown={keyPress}
+                  className="text-area text-area__header mb-1"
                   value={coulumnHeader}
-                />
-                <button className="btn btn-primary" onClick={handleAddColumn}>Add</button>
-                <span onClick={()=>setIsAddOptVisible(false)} className="cross">X</span>
+                ></textarea>
+                <button className="btn btn-primary" onClick={handleAddColumn}>
+                  Add
+                </button>
+                <span
+                  onClick={() => setIsAddOptVisible(false)}
+                  className="cross"
+                >
+                  X
+                </span>
               </div>
             )}
           </div>

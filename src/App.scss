@@ -6,6 +6,10 @@ $element-box-shadow-hovered: 2px 2px 4px rgba(0, 0, 0, 0.2);
 $button-box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 $button-box-shadow-hovered: 1px 1px 4px rgba(0, 0, 0, 0.2);
 
+.mb-1{
+  margin-bottom: 10px;
+}
+
 // Box shadows
 @mixin box-shadow($shadow...) {
   -webkit-box-shadow: $shadow;
@@ -45,21 +49,26 @@ $button-box-shadow-hovered: 1px 1px 4px rgba(0, 0, 0, 0.2);
 .text-area {
   border: none;
   overflow: hidden;
-  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
   outline: none;
   background-color: transparent;
   transition: box-shadow, background-color ease 0.35s;
   resize: none;
   border-radius: $element-border-radius;
+  height:20px;
 
   font-size: 18px;
   font-weight: 600;
+
+  width: 90%;
+  padding: 10px 5%;
+
 
   &__header {
   }
 
   &:focus, &:active{
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 1);
     @include box-shadow($button-box-shadow-hovered);
   }
 }
@@ -75,18 +84,21 @@ input {
   }
 }
 
+.danger{
+  box-shadow: 2px 2px 4px rgba(228, 9, 9, 0.2);
+}
+
 .card-style {
   width: 90%;
   padding: 10px 5%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 250, 0.3);
   cursor: pointer;
   border-radius: $element-border-radius;
   @include box-shadow($element-box-shadow);
   transition: background-color, box-shadow ease 0.35s;
 
-  &:hover,
-  &.active {
-    background-color: rgba(255, 255, 255, 0.5);
+  &:hover, &.active{
+    background-color: #f4f4f4;
     @include box-shadow($element-box-shadow-hovered);
   }
 }
@@ -201,13 +213,19 @@ input {
 
 .add-item-controller {
   @extend .card-style;
+  background-color: rgba(255, 255, 250, 0.5);
 
-  .input-text {
-    display: block;
-    width: 90%;
+  padding: 0;
+  width: 100%;
+
+  .column-form{
     padding: 10px 5%;
-    margin-bottom: 10px;
-    border: none;
+  }
+
+  textarea{
+    border: 1px solid rgba(0,0,0,0.05);
+    display: block;
+    background-color: #fcfcfc;
   }
 
   .btn {
@@ -218,14 +236,12 @@ input {
     font-weight: 600;
     padding: 10px 10px;
     border-radius: $element-border-radius;
+    @include box-shadow($element-box-shadow-hovered);
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.3);
+      
     }
   }
 }
 
-.text {
-  padding: 10px 10px;
-  width: 91%;
-}
