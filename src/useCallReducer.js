@@ -1,5 +1,6 @@
 import { useReducer } from "react";
 import { getLocalData, setLocalData, moveArrayElement, clearLocalData } from "./utils";
+import sampleData from './sample-data'
 
 let boardInitialState = {
   id: "customBoard",
@@ -139,20 +140,24 @@ function reducer(state, action) {
         isCachingEnabled: action.value,
       });
 
+    case "reset": 
+      return updateLocalState(boardInitialState)
+
     default:
       return state;
   }
 }
 
 export default function useCallReducer() {
+  let stateData = sampleData || boardInitialState;
   const localBoradData = getLocalData("board");
   if (!localBoradData) {
-    setLocalData("board", JSON.stringify(boardInitialState));
+    setLocalData("board", JSON.stringify(stateData));
   } else {
     const parsed = JSON.parse(localBoradData);
     if (parsed.id && parsed.type && parsed.innerChildren.length) {
-      boardInitialState = parsed;
+      stateData = parsed;
     }
   }
-  return useReducer(reducer, boardInitialState);
+  return useReducer(reducer, stateData);
 }

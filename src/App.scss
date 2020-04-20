@@ -105,7 +105,7 @@ input {
 }
 
 .danger {
-  box-shadow: 2px 2px 4px rgba(228, 9, 9, 0.2);
+  box-shadow: 2px 2px 4px rgba(228, 9, 9, 1);
 }
 
 .card-style {
@@ -199,6 +199,14 @@ h3 {
         margin-right: 10px;
       }
     }
+
+    .reset{
+      cursor: pointer;
+      transition: color ease 0.35s;
+      &:hover{
+        color: rgba(244, 0, 0, 0.8);
+      }
+    }
   }
 }
 
@@ -214,18 +222,21 @@ h3 {
 }
 
 .columns {
-  white-space: nowrap;
-  padding-bottom: 8px;
-  margin-bottom: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  
   padding-left: 4px;
   padding-right: 4px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+
+  white-space: nowrap;
 }
 
 .column {
@@ -328,7 +339,7 @@ h3 {
 }
 
 .hovered {
-  border: dashed 1px red;
+  border: dashed 1px rgba(0, 0, 0, 0.2);
 }
 
 /* css for switch component */

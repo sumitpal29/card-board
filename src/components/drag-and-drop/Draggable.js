@@ -8,17 +8,10 @@ function Draggable(props) {
   const drag = (e, columnIndex,taskIndex) => {
     const el = e.target;
     const type = e.target.getAttribute("type");
+    el.classList.add("hold");
+    
     e.dataTransfer.setData("transfer", e.target.id);
     e.dataTransfer.setData("target-type", type);
-
-    // if (type === "card") {
-    //   console.log("column index sent", columnIndex, taskIndex, e.target.id);
-
-    //   e.dataTransfer.setData("column-index", columnIndex);
-    //   e.dataTransfer.setData("card-index", taskIndex);
-    // }
-
-    el.classList.add("hold");
 
     setTimeout(() => el.classList.add("invisible"), 0);
 

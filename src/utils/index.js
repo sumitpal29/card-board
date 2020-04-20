@@ -37,9 +37,11 @@ export const setLocalData = (key, value) => {
 };
 
 export const clearLocalData = (id) => {
+  
   try {
     if (!window) return;
-    window.localStorage.removeItem(id);
+    console.log('local data cleared!!')
+    setTimeout(()=>window.localStorage.removeItem(id), 0);
   } catch (err) {
     console.error(err);
   }

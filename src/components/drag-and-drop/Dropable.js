@@ -32,15 +32,6 @@ const constGetParentType = (el) => {
   };
 };
 
-const findIndex = (arr, id) => {
-  arr.findIndex((el) => {
-    if (el.id === id) {
-      return true;
-    }
-    return false;
-  });
-};
-
 function Dropable(props) {
   // debugger;
   const stateContext = useContext(StateContext);
@@ -53,12 +44,18 @@ function Dropable(props) {
     // when column dragged over column
     if (dropElementType === "column" && dragElementType === "column") {
       const left = e.target.getBoundingClientRect().left;
+      const width = e.target.getBoundingClientRect().width;
       const x = e.pageX;
-      const placement = left + 272 / 2 < x ? 1 : 0;
-      const columnIndex = findIndex(
-        stateContext.currentBoardState.innerChildren,
-        e.target.id
+      const placement = left + width / 2 < x ? 1 : 0;
+      const columnIndex = stateContext.currentBoardState.innerChildren.findIndex(
+        (el) => {
+          if (el.id === e.target.id) {
+            return true;
+          }
+          return false;
+        }
       );
+
       const draggedIndex = e.dataTransfer.getData("index");
       const draggedFrom = Number(draggedIndex);
       const newPosition = placement + Number(columnIndex);
@@ -71,16 +68,24 @@ function Dropable(props) {
         },
       });
     } else if (dropElementType === "column" && dragElementType === "card") {
-      const newColumnIndex = findIndex(
-        stateContext.currentBoardState.innerChildren,
-        e.target.id
+      const newColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
+        (el) => {
+          if (el.id === e.target.id) {
+            return true;
+          }
+          return false;
+        }
       );
       const draggedCardID = e.dataTransfer.getData("transfer");
       const elData = constGetParentType(document.getElementById(draggedCardID));
       const { columnConfig } = elData;
-      const oldColumnIndex = findIndex(
-        stateContext.currentBoardState.innerChildren,
-        columnConfig.id
+      const oldColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
+        (el) => {
+          if (el.id === columnConfig.id) {
+            return true;
+          }
+          return false;
+        }
       );
 
       if (oldColumnIndex !== newColumnIndex) {
@@ -88,7 +93,12 @@ function Dropable(props) {
         const cards =
           stateContext.currentBoardState.innerChildren[oldColumnIndex]
             .innerChildren;
-        const cardIndex = findIndex(cards, draggedCardID);
+        const cardIndex = cards.findIndex((el) => {
+          if (el.id === draggedCardID) {
+            return true;
+          }
+          return false;
+        });
 
         stateContext.dispatch({
           type: "chageCardPosition",
@@ -114,90 +124,15 @@ function Dropable(props) {
       const { cardConfig } = nearestParentDetails;
       const { columnConfig } = nearestParentDetails;
 
-      if (
-        cardConfig &&
-        cardConfig.type === "card" &&
-        dragElementType === "card"
-      ) {
-        // find card index, which column is in
-        // console.log(nearestParentDetails);
-        // call move card
-        // required - column index, current card index, placement
-        const y = e.pageY;
-        const placement =
-          cardConfig.client.top + cardConfig.client.height / 2 < y ? 1 : 0;
-
-        const newColumnIndex = stateContext.currentBoardState.innerChildren.findIndex((el) => {
-          if (el.id === columnConfig.id) {
-            return true;
-          }
-          return false;
-        });
-        // findIndex(
-        //   stateContext.currentBoardState.innerChildren,
-        //   columnConfig.id
-        // );
-
-        // const droppedOverCard = stateContext.currentBoardState.innerChildren[
-        //   newColumnIndex
-        // ].innerChildren.findIndex((el) => {
-        //   if (el.id === cardConfig.id) {
-        //     return true;
-        //   }
-        //   return false;
-        // });
-
-        const cards =
-          stateContext.currentBoardState.innerChildren[newColumnIndex].innerChildren;
-        const droppedOverCard = findIndex(cards, cardConfig.id);
-
+      if (dragElementType === "card") {
         const draggedCardID = e.dataTransfer.getData("transfer");
         const elData = constGetParentType(
           document.getElementById(draggedCardID)
         );
-
-        const oldColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
-          (el) => {
-            if (el.id === elData.columnConfig.id) {
-              return true;
-            }
-            return false;
-          }
-        );
-
-        const cardOldPosition = stateContext.currentBoardState.innerChildren[
-          oldColumnIndex
-        ].innerChildren.findIndex((el) => {
-          if (el.id === draggedCardID) {
-            return true;
-          }
-          return false;
-        });
-
-        if (newColumnIndex === oldColumnIndex) {
-          stateContext.dispatch({
-            type: "moveCard",
-            value: {
-              newCardPosition: droppedOverCard + placement,
-              oldCardPosition: cardOldPosition,
-              columnIndex: newColumnIndex,
-            },
-          });
-        } else {
-          stateContext.dispatch({
-            type: "chageCardPosition",
-            value: {
-              oldColumnIndex,
-              newColumnIndex,
-              cardIndex: cardOldPosition, // old card index
-              newIndex: droppedOverCard + placement,
-            },
-          });
-        }
-        // column index if different then delete card from its current column and change parent index
-        // column index is same then just move the card
-      } else if (dragElementType === "card" && !cardConfig) {
-        // drop it inside column
+        // find card index, which column is in
+        // console.log(nearestParentDetails);
+        // call move card
+        // required - column index, current card index, placement
         const newColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
           (el) => {
             if (el.id === columnConfig.id) {
@@ -207,14 +142,6 @@ function Dropable(props) {
           }
         );
 
-        const columnLength =
-          stateContext.currentBoardState.innerChildren[newColumnIndex]
-            .innerChildren.length;
-        const draggedCardID = e.dataTransfer.getData("transfer");
-        const elData = constGetParentType(
-          document.getElementById(draggedCardID)
-        );
-
         const oldColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
           (el) => {
             if (el.id === elData.columnConfig.id) {
@@ -233,38 +160,71 @@ function Dropable(props) {
           return false;
         });
 
-        if (newColumnIndex !== oldColumnIndex) {
-          // push at the end
+        let newCardPosition = 0;
+        let newIndex = 0;
+
+        const cards =
+          stateContext.currentBoardState.innerChildren[newColumnIndex]
+            .innerChildren;
+
+        if (cardConfig && cardConfig.type === "card") {
+          const y = e.pageY;
+          const placement =
+            cardConfig.client.top + cardConfig.client.height / 2 < y ? 1 : 0;
+
+          const droppedOverCard = cards.findIndex((el) => {
+            if (el.id === cardConfig.id) {
+              return true;
+            }
+            return false;
+          });
+
+          newCardPosition = droppedOverCard + placement;
+          newIndex = droppedOverCard + placement;
+        } else {
+          const columnLength =
+            stateContext.currentBoardState.innerChildren[newColumnIndex]
+              .innerChildren.length;
+          newCardPosition = columnLength - 1;
+          newIndex = columnLength;
+        }
+        // if from same column just move the card
+        if (newColumnIndex === oldColumnIndex) {
+          stateContext.dispatch({
+            type: "moveCard",
+            value: {
+              newCardPosition,
+              oldCardPosition: cardOldPosition,
+              columnIndex: newColumnIndex,
+            },
+          });
+        } else {
+          // if not remove card from old column and place it over new column
           stateContext.dispatch({
             type: "chageCardPosition",
             value: {
               oldColumnIndex,
               newColumnIndex,
               cardIndex: cardOldPosition, // old card index
-              newIndex: columnLength,
-            },
-          });
-        } else {
-          stateContext.dispatch({
-            type: "moveCard",
-            value: {
-              newCardPosition: columnLength - 1,
-              oldCardPosition: cardOldPosition,
-              columnIndex: newColumnIndex,
+              newIndex,
             },
           });
         }
+        // column index if different then delete card from its current column and change parent index
+        // column index is same then just move the card
+        // drop it inside column
       } else if (dragElementType === "column") {
         // find which column
         if (!columnConfig || !columnConfig.id) {
           return;
         }
         const newColumnId = columnConfig.id;
-        const left = document
-          .getElementById(newColumnId)
-          .getBoundingClientRect().left;
+        const elClient = document
+        .getElementById(newColumnId)
+        .getBoundingClientRect()
+        const left = elClient.left;
         const x = e.pageX;
-        const placement = left + 272 / 2 < x ? 1 : 0;
+        const placement = left + elClient.width / 2 < x ? 1 : 0;
         const index = stateContext.currentBoardState.innerChildren.findIndex(
           (el) => {
             if (el.id === newColumnId) {

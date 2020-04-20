@@ -2,7 +2,7 @@ import React, { useContext, useCallback, useState, useEffect } from "react";
 import Task from "./Task";
 import { StateContext } from "./Wrapper";
 import Draggable from "./drag-and-drop/Draggable";
-import { debounce, adjustTextAreaheight } from "../utils";
+import { adjustTextAreaheight } from "../utils";
 
 const defaultCard = () => ({
   id: `card_${Math.random().toString().slice(2, 8)}`,
@@ -12,6 +12,7 @@ const defaultCard = () => ({
   properties: {},
 });
 
+
 function CardContainer(props) {
   const stateContext = useContext(StateContext);
   const card = stateContext.currentBoardState.innerChildren[props.index];
@@ -19,7 +20,7 @@ function CardContainer(props) {
   const [cardHeader, setCardHeader] = useState(card.header);
   const [isAddOptVisible, setAddOption] = useState(false);
   const [newCardHeader, setNewCardHeader] = useState("");
-
+  
   let textHeader = null;
   let inputColumn = null;
 
@@ -27,6 +28,17 @@ function CardContainer(props) {
     setCardHeader(card.header);
     textHeader && adjustTextAreaheight(textHeader);
   }, [card.header, textHeader]);
+
+  const updateColumnHeader = useCallback((value) => {
+    stateContext.dispatch({
+      type: "changeColumnHeader",
+      value: {
+        header: value,
+        index: props.index,
+      },
+    });
+  }, [props.index, stateContext]);
+  
 
   const handleAddCard = useCallback(() => {
     if (newCardHeader.length > 0) {
@@ -45,20 +57,10 @@ function CardContainer(props) {
     }
   }, [newCardHeader, props.index, stateContext]);
 
-  const updateColumnHeader = (value) => {
-    stateContext.dispatch({
-      type: "changeColumnHeader",
-      value: {
-        header: value,
-        index: props.index,
-      },
-    });
-  };
-  const deboucedFn = debounce(updateColumnHeader, 1000);
   const setCardHeaderFn = (val) => {
     setCardHeader(val);
     // call debounce and delay in text-typing / updating state :)
-    deboucedFn(val);
+    updateColumnHeader(val);
   };
 
   const keyPress = (e) => {
