@@ -134,10 +134,10 @@ function reducer(state, action) {
       });
 
     case "changeLocalStoreOption":
-      return {
+      return updateLocalState({
         ...state,
         isCachingEnabled: action.value,
-      };
+      });
 
     default:
       return state;
