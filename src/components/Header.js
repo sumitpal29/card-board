@@ -1,6 +1,5 @@
 import React, { useState, useContext, useCallback } from "react";
 import { StateContext } from "./Wrapper";
-import { clearLocalData } from "../utils";
 
 function Header() {
   const stateContext = useContext(StateContext);
@@ -13,8 +12,9 @@ function Header() {
       type: "changeLocalStoreOption",
       value: !isCachingEnabled,
     });
+    
     setIsCachingEnabled(!isCachingEnabled);
-    clearLocalData();
+    
   }, [isCachingEnabled, stateContext]);
 
   return (

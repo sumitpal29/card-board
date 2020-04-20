@@ -36,10 +36,10 @@ export const setLocalData = (key, value) => {
   }
 };
 
-export const clearLocalData = () => {
+export const clearLocalData = (id) => {
   try {
     if (!window) return;
-    window.localStorage.clear();
+    window.localStorage.removeItem(id);
   } catch (err) {
     console.error(err);
   }

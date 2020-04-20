@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { getLocalData, setLocalData, moveArrayElement } from "./utils";
+import { getLocalData, setLocalData, moveArrayElement, clearLocalData } from "./utils";
 
 let boardInitialState = {
   id: "customBoard",
@@ -16,7 +16,7 @@ const defaultColumn = () => ({
 });
 
 const updateLocalState = (state) => {
-  state.isCachingEnabled && setLocalData("board", JSON.stringify(state));
+  state.isCachingEnabled ? setLocalData("board", JSON.stringify(state)) : clearLocalData('board');
   return state;
 };
 
