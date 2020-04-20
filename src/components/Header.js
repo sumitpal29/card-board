@@ -26,8 +26,8 @@ function Header() {
   return (
     <header className="header">
       <div className="header-logo">
-        <img src="../../post-it.svg" height="30" alt="" />
-        <span>Card-Borad</span>
+        <img src="../../post-it.svg" height="30" alt="Card Board App by Sumit Pal" />
+        <span>Card-Board</span>
       </div>
       <div className="header-actions">
         <span className="reset" title="All data will be deleted!" onClick={handleReset}>Reset</span>

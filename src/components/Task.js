@@ -91,26 +91,37 @@ function Task(props) {
           ></textarea>
           <h3>Add Priority</h3>
           <div onChange={changePriority} className="priority-container">
-            <span>High</span>
-            <label className="switch">
+            
+            <label className="switch rounded">
               <input type="radio" name="priority" value="red" />
-              <span className="priority red"></span>
+              <div className="priority red"></div>
             </label>
-            <span>Medium</span>
-            <label className="switch">
+            
+            <label className="switch rounded">
               <input type="radio" name="priority" value="yellow" />
-              <span className="priority yellow"></span>
+              <div className="priority yellow"></div>
             </label>
-            <span>Low</span>
-            <label className="switch">
+            
+            <label className="switch rounded">
               <input type="radio" name="priority" value="green" />
-              <span className="priority green"></span>
+              <div className="priority green"></div>
             </label>
-            <span>None</span>
-            <label className="switch">
+            
+            <label className="switch rounded">
+              <input type="radio" name="priority" value="pink" />
+              <div className="priority pink"></div>
+            </label>
+
+            <label className="switch rounded">
+              <input type="radio" name="priority" value="blue" />
+              <div className="priority blue"></div>
+            </label>
+
+            <label className="switch rounded">
               <input type="radio" name="priority" value="none" />
-              <span className="priority none"></span>
+              <div className="priority none"></div>
             </label>
+
           </div>
           <div className="btn-container">
             <button onClick={handleDelete} className="btn btn-danger">
