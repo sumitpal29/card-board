@@ -14,7 +14,8 @@ function Header() {
       value: !isCachingEnabled,
     });
     setIsCachingEnabled(!isCachingEnabled);
-  },[isCachingEnabled, stateContext]);
+    clearLocalData();
+  }, [isCachingEnabled, stateContext]);
 
   return (
     <header className="header">
@@ -24,16 +25,16 @@ function Header() {
       </div>
       <div className="header-actions">
         <span>store data locally</span>
-        <label className="switch" >
+        <label className="switch">
           <input
             type="checkbox"
             checked={isCachingEnabled}
             onChange={handleToggle}
           />
-          
+
           <span className="slider"></span>
         </label>
-        <span onClick={() => clearLocalData()}>reset</span>
+        {/* <span onClick={() => clearLocalData()}>reset</span> */}
       </div>
     </header>
   );
