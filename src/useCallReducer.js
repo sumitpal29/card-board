@@ -20,7 +20,7 @@ const moveArrayElement = (arr, old, to) => {
 };
 
 const updateLocalState = (state) => {
-  console.log(state.isCachingEnabled, state)
+  console.log(state.isCachingEnabled, state);
   state.isCachingEnabled && setLocalData("board", JSON.stringify(state));
   return state;
 };
@@ -38,6 +38,19 @@ function reducer(state, action) {
         ...state,
         innerChildren: [...state.innerChildren, newColumn],
       });
+
+    case "deleteColumn":
+      const oldState = { ...state };
+      oldState.innerChildren.splice(action.value, 1);
+
+      return updateLocalState(oldState);
+
+    case "deleteCard":
+      const oldColumnState = { ...state };
+      oldColumnState.innerChildren[
+        action.value.columnIndex
+      ].innerChildren.splice(action.value.cardIndex, 1);
+      return updateLocalState(oldColumnState);
 
     case "moveColumn":
       const elArr = [...state.innerChildren];
@@ -116,21 +129,21 @@ function reducer(state, action) {
         ...state,
         innerChildren: [...clonedInnerChildren],
       });
-    case "updateCard": 
+    case "updateCard":
+      const _state = { ...state };
+      const props = action.value;
+      _state.innerChildren[props.columnIndex].innerChildren[props.cardIndex] =
+        props.card;
 
-    const _state = {...state};
-    const props = action.value;
-    _state.innerChildren[props.columnIndex].innerChildren[props.cardIndex] = props.card;
+      return updateLocalState({
+        ..._state,
+      });
 
-    return updateLocalState({
-      ..._state
-    })
-
-
-    case "changeLocalStoreOption": 
-     return {
-       ...state, isCachingEnabled: action.value
-     }
+    case "changeLocalStoreOption":
+      return {
+        ...state,
+        isCachingEnabled: action.value,
+      };
 
     default:
       return state;

@@ -69,7 +69,10 @@ function CardContainer(props) {
   };
 
   const handleColumnDelete = () => {
-    console.log('delete column')
+    stateContext.dispatch({
+      type: "deleteColumn",
+      value: props.index
+    })
   }
 
   useEffect(() => {

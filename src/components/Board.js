@@ -53,7 +53,7 @@ const Board = () => {
           <div className={`add-item-controller ${isAddOptVisible && "active"}`}>
             {!isAddOptVisible ? (
               <div className="column-form" onClick={handleOnAddColumn}>
-                + New Column {isAddOptVisible + ""}
+                + Add New Column
               </div>
             ) : (
               <div className="column-form">

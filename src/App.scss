@@ -1,5 +1,6 @@
 $theme-color: #ffd868;
 $secondary-theme-color: #dee3e2;
+$danger-theme-color: #ff5151;
 $card-container-color: #faf4f4;
 $element-border-radius: 4px;
 $element-box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.2);
@@ -51,6 +52,15 @@ $button-box-shadow-hovered: 1px 1px 4px rgba(0, 0, 0, 0.2);
 
     &:hover {
       background-color: darken($secondary-theme-color, 20);
+    }
+  }
+
+  &-danger{
+    background-color: darken($danger-theme-color, 10);
+    color: #ffffff;
+
+    &:hover {
+      background-color: darken($danger-theme-color, 20);
     }
   }
 }
@@ -158,6 +168,7 @@ h3 {
 
 /* Page and Element styling */
 .card-board {
+  @extend .no-user-select;
   height: 100%;
   position: relative;
   z-index: 0;
@@ -250,9 +261,10 @@ h3 {
 
       img {
         height: 15px;
-        transition: height ease 0.35s;
+        opacity: 0.3;
+        transition: opacity ease 0.35s;
         &:hover {
-          height: 18px;
+          opacity: 1;
         }
       }
     }

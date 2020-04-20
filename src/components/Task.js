@@ -39,6 +39,16 @@ function Task(props) {
     setPriority(e.target.value);
   };
 
+  const handleDelete = () => {
+    stateContext.dispatch({
+      type: "deleteCard",
+      value: {
+        cardIndex: props.cardIndex,
+        columnIndex: props.columnIndex,
+      },
+    });
+  };
+
   useEffect(() => {
     modalIsOpen && inputColumn && setTimeout(() => inputColumn.focus(), 0);
   }, [inputColumn, modalIsOpen]);
@@ -103,6 +113,9 @@ function Task(props) {
             </label>
           </div>
           <div className="btn-container">
+            <button onClick={handleDelete} className="btn btn-danger">
+              DELETE
+            </button>
             <button onClick={handleUpdate} className="btn btn-primary">
               Update
             </button>
