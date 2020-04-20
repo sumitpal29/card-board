@@ -84,7 +84,7 @@ $button-box-shadow-hovered: 1px 1px 4px rgba(0, 0, 0, 0.2);
 
   &:focus,
   &:active {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: #ffffff;
     @include box-shadow($button-box-shadow-hovered);
   }
 

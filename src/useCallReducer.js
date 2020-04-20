@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { getLocalData, setLocalData } from "./utils";
+import { getLocalData, setLocalData, moveArrayElement } from "./utils";
 
 let boardInitialState = {
   id: "customBoard",
@@ -15,18 +15,12 @@ const defaultColumn = () => ({
   innerChildren: [],
 });
 
-const moveArrayElement = (arr, old, to) => {
-  arr.splice(to, 0, arr.splice(old, 1)[0]);
-};
-
 const updateLocalState = (state) => {
-  console.log(state.isCachingEnabled, state);
   state.isCachingEnabled && setLocalData("board", JSON.stringify(state));
   return state;
 };
 
 function reducer(state, action) {
-  console.log("last state", state);
   switch (action.type) {
     case "addColumn":
       const newColumn = defaultColumn();

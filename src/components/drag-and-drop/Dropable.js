@@ -1,44 +1,51 @@
 import React, { useContext } from "react";
 import { StateContext } from "../Wrapper";
 
+const constGetParentType = (el) => {
+  let loop = true;
+  let cardConfig = null;
+  let columnConfig = null;
+
+  while (loop) {
+    if (el.id === "boardRow") {
+      loop = false;
+      return null;
+    }
+    if (!cardConfig && el.getAttribute("type") === "card") {
+      cardConfig = {
+        type: el.getAttribute("type"),
+        id: el.id,
+        client: el.getBoundingClientRect(),
+      };
+    }
+    if (el.getAttribute("type") === "column") {
+      columnConfig = {
+        id: el.id,
+      };
+      loop = false;
+    }
+    el = el.parentNode;
+  }
+  return {
+    cardConfig,
+    columnConfig,
+  };
+};
+
+const findIndex = (arr, id) => {
+  arr.findIndex((el) => {
+    if (el.id === id) {
+      return true;
+    }
+    return false;
+  });
+};
+
 function Dropable(props) {
-  // console.log("rendered dropable component", props);
-  console.log("called Dropable", Math.random());
   // debugger;
   const stateContext = useContext(StateContext);
-  const constGetParentType = (el) => {
-    let loop = true;
-    let cardConfig = null;
-    let columnConfig = null;
-
-    while (loop) {
-      if (el.id === "boardRow") {
-        loop = false;
-        return null;
-      }
-      if (!cardConfig && el.getAttribute("type") === "card") {
-        cardConfig = {
-          type: el.getAttribute("type"),
-          id: el.id,
-          client: el.getBoundingClientRect(),
-        };
-      }
-      if (el.getAttribute("type") === "column") {
-        columnConfig = {
-          id: el.id,
-        };
-        loop = false;
-      }
-      el = el.parentNode;
-    }
-    return {
-      cardConfig,
-      columnConfig,
-    };
-  };
   const drop = (e) => {
     e.preventDefault();
-    console.log("DROP FUNCTION CALLED");
 
     const dragElementType = e.dataTransfer.getData("target-type");
     const dropElementType = e.target.getAttribute("type");
@@ -48,18 +55,13 @@ function Dropable(props) {
       const left = e.target.getBoundingClientRect().left;
       const x = e.pageX;
       const placement = left + 272 / 2 < x ? 1 : 0;
-      const index = stateContext.currentBoardState.innerChildren.findIndex(
-        (el) => {
-          if (el.id === e.target.id) {
-            return true;
-          }
-          return false;
-        }
+      const columnIndex = findIndex(
+        stateContext.currentBoardState.innerChildren,
+        e.target.id
       );
-
       const draggedIndex = e.dataTransfer.getData("index");
       const draggedFrom = Number(draggedIndex);
-      const newPosition = placement + Number(index);
+      const newPosition = placement + Number(columnIndex);
 
       stateContext.dispatch({
         type: "moveColumn",
@@ -68,51 +70,26 @@ function Dropable(props) {
           newPosition,
         },
       });
-
-      console.log(
-        "Column moved placement, newPosition, draggedFrom",
-        placement,
-        newPosition,
-        draggedFrom
-      );
-    } else if (dropElementType === "card" && dragElementType === "card") {
-      console.log("Else if", dropElementType, dragElementType);
-    } else if (dropElementType === "card" && dragElementType === "column") {
-      console.log("Else if", dropElementType, dragElementType);
     } else if (dropElementType === "column" && dragElementType === "card") {
-      const newColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
-        (el) => {
-          if (el.id === e.target.id) {
-            return true;
-          }
-          return false;
-        }
+      const newColumnIndex = findIndex(
+        stateContext.currentBoardState.innerChildren,
+        e.target.id
       );
-
-      // const currentColumnIndex = e.dataTransfer.getData("column-index");
-      // const currentCardIndex = e.dataTransfer.getData("card-index");
       const draggedCardID = e.dataTransfer.getData("transfer");
       const elData = constGetParentType(document.getElementById(draggedCardID));
       const { columnConfig } = elData;
-      const oldColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
-        (el) => {
-          if (el.id === columnConfig.id) {
-            return true;
-          }
-          return false;
-        }
+      const oldColumnIndex = findIndex(
+        stateContext.currentBoardState.innerChildren,
+        columnConfig.id
       );
 
       if (oldColumnIndex !== newColumnIndex) {
         // change card position
-        const cardIndex = stateContext.currentBoardState.innerChildren[
-          oldColumnIndex
-        ].innerChildren.findIndex((el) => {
-          if (el.id === draggedCardID) {
-            return true;
-          }
-          return false;
-        });
+        const cards =
+          stateContext.currentBoardState.innerChildren[oldColumnIndex]
+            .innerChildren;
+        const cardIndex = findIndex(cards, draggedCardID);
+
         stateContext.dispatch({
           type: "chageCardPosition",
           value: {
@@ -123,26 +100,20 @@ function Dropable(props) {
           },
         });
       }
-
-      console.log(
-        `card droped in a column whose index is ${newColumnIndex} --- ${draggedCardID} --- ${oldColumnIndex}`,
-        elData
-      );
     }
     // sceenario when droped over element type is unknown
     else if (!dropElementType) {
       const nearestParentDetails = constGetParentType(e.target);
-      console.log("nearestParentDetails", nearestParentDetails);
 
       if (!nearestParentDetails) {
+        e.target.classList.remove("hovered");
         // if no relevant data on droped over el found do noting
-        console.log("return ----");
         return;
       }
 
       const { cardConfig } = nearestParentDetails;
       const { columnConfig } = nearestParentDetails;
-      console.log(dragElementType, cardConfig, columnConfig);
+
       if (
         cardConfig &&
         cardConfig.type === "card" &&
@@ -153,29 +124,32 @@ function Dropable(props) {
         // call move card
         // required - column index, current card index, placement
         const y = e.pageY;
-
-        // const cardOldPosition = e.dataTransfer.getData("card-index")
-
         const placement =
           cardConfig.client.top + cardConfig.client.height / 2 < y ? 1 : 0;
 
-        const newColumnIndex = stateContext.currentBoardState.innerChildren.findIndex(
-          (el) => {
-            if (el.id === columnConfig.id) {
-              return true;
-            }
-            return false;
-          }
-        );
-
-        const droppedOverCard = stateContext.currentBoardState.innerChildren[
-          newColumnIndex
-        ].innerChildren.findIndex((el) => {
-          if (el.id === cardConfig.id) {
+        const newColumnIndex = stateContext.currentBoardState.innerChildren.findIndex((el) => {
+          if (el.id === columnConfig.id) {
             return true;
           }
           return false;
         });
+        // findIndex(
+        //   stateContext.currentBoardState.innerChildren,
+        //   columnConfig.id
+        // );
+
+        // const droppedOverCard = stateContext.currentBoardState.innerChildren[
+        //   newColumnIndex
+        // ].innerChildren.findIndex((el) => {
+        //   if (el.id === cardConfig.id) {
+        //     return true;
+        //   }
+        //   return false;
+        // });
+
+        const cards =
+          stateContext.currentBoardState.innerChildren[newColumnIndex].innerChildren;
+        const droppedOverCard = findIndex(cards, cardConfig.id);
 
         const draggedCardID = e.dataTransfer.getData("transfer");
         const elData = constGetParentType(
@@ -234,7 +208,8 @@ function Dropable(props) {
         );
 
         const columnLength =
-          stateContext.currentBoardState.innerChildren[newColumnIndex].innerChildren.length;
+          stateContext.currentBoardState.innerChildren[newColumnIndex]
+            .innerChildren.length;
         const draggedCardID = e.dataTransfer.getData("transfer");
         const elData = constGetParentType(
           document.getElementById(draggedCardID)
@@ -270,7 +245,6 @@ function Dropable(props) {
             },
           });
         } else {
-          console.log("here", oldColumnIndex, newColumnIndex, columnLength);
           stateContext.dispatch({
             type: "moveCard",
             value: {

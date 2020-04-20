@@ -44,3 +44,7 @@ export const clearLocalData = () => {
     console.error(err);
   }
 };
+
+export const moveArrayElement = (arr, old, to) => {
+  arr.splice(to, 0, arr.splice(old, 1)[0]);
+};

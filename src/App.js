@@ -6,7 +6,6 @@ import Header from "./components/Header";
 import "./App.scss";
 
 function App() {
-  console.log("rendered App component");
   return (
     <div className="card-board">
       <div className="layout">
