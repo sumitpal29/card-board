@@ -1,6 +1,5 @@
 import React, { useState, useContext, useCallback } from "react";
 import { StateContext } from "./Wrapper";
-import { clearLocalData } from "../utils";
 
 function Header() {
   const stateContext = useContext(StateContext);
@@ -13,8 +12,16 @@ function Header() {
       type: "changeLocalStoreOption",
       value: !isCachingEnabled,
     });
+
     setIsCachingEnabled(!isCachingEnabled);
-  },[isCachingEnabled, stateContext]);
+  }, [isCachingEnabled, stateContext]);
+
+  const handleReset = useCallback(() => {
+    stateContext.dispatch({
+      type: "reset",
+    });
+    
+  }, [stateContext]);
 
   return (
     <header className="header">
@@ -23,17 +30,16 @@ function Header() {
         <span>Card-Borad</span>
       </div>
       <div className="header-actions">
+        <span className="reset" title="All data will be deleted!" onClick={handleReset}>Reset</span>
         <span>store data locally</span>
-        <label className="switch" >
+        <label className="switch">
           <input
             type="checkbox"
             checked={isCachingEnabled}
             onChange={handleToggle}
           />
-          
           <span className="slider"></span>
         </label>
-        <span onClick={() => clearLocalData()}>reset</span>
       </div>
     </header>
   );

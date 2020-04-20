@@ -1,5 +1,6 @@
 import { useReducer } from "react";
-import { getLocalData, setLocalData } from "./utils";
+import { getLocalData, setLocalData, moveArrayElement, clearLocalData } from "./utils";
+import sampleData from './sample-data'
 
 let boardInitialState = {
   id: "customBoard",
@@ -15,18 +16,12 @@ const defaultColumn = () => ({
   innerChildren: [],
 });
 
-const moveArrayElement = (arr, old, to) => {
-  arr.splice(to, 0, arr.splice(old, 1)[0]);
-};
-
 const updateLocalState = (state) => {
-  console.log(state.isCachingEnabled, state);
-  state.isCachingEnabled && setLocalData("board", JSON.stringify(state));
+  state.isCachingEnabled ? setLocalData("board", JSON.stringify(state)) : clearLocalData('board');
   return state;
 };
 
 function reducer(state, action) {
-  console.log("last state", state);
   switch (action.type) {
     case "addColumn":
       const newColumn = defaultColumn();
@@ -140,10 +135,13 @@ function reducer(state, action) {
       });
 
     case "changeLocalStoreOption":
-      return {
+      return updateLocalState({
         ...state,
         isCachingEnabled: action.value,
-      };
+      });
+
+    case "reset": 
+      return updateLocalState(boardInitialState)
 
     default:
       return state;
@@ -151,14 +149,15 @@ function reducer(state, action) {
 }
 
 export default function useCallReducer() {
+  let stateData = sampleData || boardInitialState;
   const localBoradData = getLocalData("board");
   if (!localBoradData) {
-    setLocalData("board", JSON.stringify(boardInitialState));
+    setLocalData("board", JSON.stringify(stateData));
   } else {
     const parsed = JSON.parse(localBoradData);
     if (parsed.id && parsed.type && parsed.innerChildren.length) {
-      boardInitialState = parsed;
+      stateData = parsed;
     }
   }
-  return useReducer(reducer, boardInitialState);
+  return useReducer(reducer, stateData);
 }

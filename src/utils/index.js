@@ -36,11 +36,17 @@ export const setLocalData = (key, value) => {
   }
 };
 
-export const clearLocalData = () => {
+export const clearLocalData = (id) => {
+  
   try {
     if (!window) return;
-    window.localStorage.clear();
+    console.log('local data cleared!!')
+    setTimeout(()=>window.localStorage.removeItem(id), 0);
   } catch (err) {
     console.error(err);
   }
+};
+
+export const moveArrayElement = (arr, old, to) => {
+  arr.splice(to, 0, arr.splice(old, 1)[0]);
 };

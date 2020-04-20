@@ -49,6 +49,7 @@ const Board = () => {
             <CardContainer index={key} />
           </Draggable>
         ))}
+        {/* Column for adding column */}
         <div className="column">
           <div className={`add-item-controller ${isAddOptVisible && "active"}`}>
             {!isAddOptVisible ? (
